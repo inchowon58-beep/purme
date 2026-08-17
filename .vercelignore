@@ -1,0 +1,12 @@
+tools/webdoc/dist
+tools/webdoc/build
+tools/webdoc/output
+tools/webdoc/.chrome-app-profile
+tools/webdoc/**/.chrome-app-profile
+tools/webdoc/*.spec
+node_modules
+.next
+out
+.env
+.env.local
+*.log

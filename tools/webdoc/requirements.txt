@@ -1,0 +1,6 @@
+requests>=2.31.0
+pyinstaller>=6.0
+python-dotenv>=1.0.0
+undetected-chromedriver>=3.5.5
+selenium>=4.15.0
+flask>=3.0.0

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>푸르메정원 웹문서생성기</title>
+  <style>
+    :root {
+      --bg: #fffaf5;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, 0.1);
+      --accent: #ff6b00;
+      --accent2: #1b4d3e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Malgun Gothic", sans-serif;
+      background: linear-gradient(160deg, #fffaf5, #f8fafc 50%, #eef2f6);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .top {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;
+      gap: 12px; margin-bottom: 16px;
+    }
+    h1 { font-size: 1.35rem; margin: 0 0 4px; }
+    .sub { color: var(--muted); font-size: .9rem; margin: 0; }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .badge {
+      display: inline-block; padding: 6px 10px; border-radius: 999px;
+      background: #e8f2ee; color: var(--accent2); font-size: .78rem; font-weight: 700;
+    }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      color: var(--ink);
+    }
+    .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .panel {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(15,23,42,.05);
+    }
+    .panel.active { display: block; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+    label { display: block; font-size: .85rem; color: var(--muted); margin: 8px 0 4px; }
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      background: #fff;
+    }
+    textarea { min-height: 180px; resize: vertical; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary { background: #fff; color: var(--accent2); border: 1px solid var(--line); }
+    button.ghost { background: #0f172a; color: #fff; }
+    button:disabled { opacity: .5; cursor: wait; }
+    .check { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: .92rem; }
+    .check input { width: auto; }
+    .status {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff4eb;
+      color: #9a3412;
+      font-size: .92rem;
+    }
+    .log {
+      height: 280px;
+      overflow: auto;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .urls { max-height: 160px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; padding: 8px; background: #fff; }
+    .urls a { display: block; color: var(--accent2); font-size: .85rem; margin: 4px 0; word-break: break-all; }
+    .hint { color: var(--muted); font-size: .82rem; margin-top: 8px; }
+    .admin-box {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>푸르메정원 웹문서생성기</h1>
+        <p class="sub">조경인테리어 푸르메정원 · 키워드 → SEO 상세페이지 발행 · Blob·IndexNow·블로그 등록</p>
+      </div>
+      <div class="top-actions">
+        <span class="badge">정원·테라스 SEO</span>
+        <button type="button" class="ghost" id="btn_quit_top">프로그램 종료</button>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="pub">키워드·발행</button>
+      <button class="tab" data-tab="sch">스케줄</button>
+      <button class="tab" data-tab="nv">블로그 등록</button>
+      <button class="tab" data-tab="log">로그·URL</button>
+    </div>
+
+    <section id="pub" class="panel active">
+      <div class="grid2">
+        <div>
+          <label>키워드 (한 줄에 하나) — 예: 정원인테리어</label>
+          <textarea id="keywords_text"></textarea>
+        </div>
+        <div>
+          <label>지역 (한 줄에 하나) → 수원정원인테리어</label>
+          <textarea id="regions_text"></textarea>
+        </div>
+      </div>
+      <div class="grid2">
+        <div>
+          <label>사이트 URL</label>
+          <input id="site_url" />
+        </div>
+        <div>
+          <label>출력 폴더</label>
+          <input id="out_dir" />
+        </div>
+        <div>
+          <label>총 발행 목표</label>
+          <input id="total_target" />
+        </div>
+        <div>
+          <label>하루 발행 수</label>
+          <input id="daily_limit" />
+        </div>
+        <div>
+          <label>조합 순서</label>
+          <select id="order_mode">
+            <option value="random">랜덤</option>
+            <option value="sequential">순차</option>
+          </select>
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" id="do_indexnow" /> 발행 후 IndexNow 전송</label>
+      <label class="check"><input type="checkbox" id="open_chrome_after" /> 발행 후 결과 URL 브라우저로 열기</label>
+      <div class="status" id="queue_summary">큐: —</div>
+      <div class="row">
+        <button id="btn_build_queue">큐 만들기 / 갱신</button>
+        <button id="btn_run">오늘 분량 지금 발행</button>
+        <button class="secondary" id="btn_save">설정 저장</button>
+        <button class="secondary" id="btn_stop">중지 요청</button>
+      </div>
+      <p class="hint">exe 폴더만 다른 PC로 복사 가능 · Blob 토큰은 [블로그 등록] 탭</p>
+    </section>
+
+    <section id="sch" class="panel">
+      <label class="check"><input type="checkbox" id="schedule_enabled" /> 매일 자동 발행 (프로그램이 실행 중일 때)</label>
+      <label>시작 시각 (HH:MM)</label>
+      <input id="schedule_time" style="max-width:160px" />
+      <div class="status" id="schedule_status">스케줄: 꺼짐</div>
+      <div class="status" id="queue_summary2">큐: —</div>
+      <div class="row">
+        <button id="btn_sched_apply">스케줄 적용</button>
+        <button class="secondary" id="btn_run2">오늘 배치 지금 실행</button>
+        <button class="secondary" id="btn_quit">프로그램 종료</button>
+      </div>
+      <p class="hint">
+        지정 시각이 이미 지난 뒤에 스케줄을 켜면 <b>오늘은 건너뛰고 내일</b>부터 자동 실행합니다.
+        오늘 분이 필요하면 [오늘 배치 지금 실행]을 누르세요.
+        브라우저 탭만 닫아도 백엔드는 유지됩니다. 완전 종료는 [프로그램 종료].
+        PC 절전 시에는 자동 발행이 멈출 수 있습니다.
+      </p>
+    </section>
+
+    <section id="nv" class="panel">
+      <label class="check"><input type="checkbox" id="auto_naver_register" /> 발행 후 인포씨에서 작업요청</label>
+      <label>Blob 토큰 (웹반영)</label>
+      <input id="blob_token" type="password" />
+      <label>블로그 아이디</label>
+      <input id="naver_id" />
+      <label>블로그 비밀번호</label>
+      <input id="naver_password" type="password" />
+      <label>등록 사이트 URL</label>
+      <input id="naver_site" />
+      <label>2Captcha 키(선택)</label>
+      <input id="twocaptcha_api_key" />
+      <div class="grid2">
+        <div>
+          <label>등록 일일 한도</label>
+          <input id="naver_daily_limit" />
+        </div>
+        <div>
+          <label>딜레이 최소(초)</label>
+          <input id="naver_delay_min" />
+        </div>
+        <div>
+          <label>딜레이 최대(초)</label>
+          <input id="naver_delay_max" />
+        </div>
+      </div>
+      <div class="status" id="pending_status">미등록 블로그: —</div>
+      <div class="row">
+        <button id="btn_save2">설정 저장</button>
+        <button id="btn_naver_pending">오늘 미등록 블로그 등록 요청</button>
+      </div>
+      <p class="hint">
+        발행은 됐는데 블로그 등록만 실패했을 때 [오늘 미등록 블로그 등록 요청]을 누르세요.
+        로그인 실패 시 등록용 브라우저를 닫고 최대 3회 자동 재시도합니다.
+        로그인만 화면에서 → 화면 밖 이동 → 등록 준비 완료 후 미리보기를 NAVER로 가립니다.
+        (목록/입력창 로딩 중 가림은 등록 오류를 유발해 준비 후에만 적용)
+      </p>
+    </section>
+
+    <section id="log" class="panel">
+      <div class="status" id="job_status">대기 중</div>
+      <label>최근 URL</label>
+      <div class="urls" id="urls"></div>
+      <label>일반 로그</label>
+      <div class="log" id="logbox"></div>
+      <div class="admin-box">
+        <label>블로그 상세 로그 (관리자)</label>
+        <div class="row" style="margin-top:0">
+          <input id="admin_password" type="password" placeholder="관리자 비밀번호" style="max-width:220px" />
+          <button id="btn_admin_unlock" class="secondary">잠금 해제</button>
+          <button id="btn_admin_lock" class="secondary">다시 잠금</button>
+        </div>
+        <div class="log" id="naver_logbox" style="margin-top:10px;height:200px">관리자 인증 후 표시됩니다.</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const fields = [
+      "keywords_text","regions_text","site_url","out_dir","total_target","daily_limit","order_mode",
+      "schedule_time","blob_token","naver_id","naver_password","naver_site","twocaptcha_api_key",
+      "naver_daily_limit","naver_delay_min","naver_delay_max"
+    ];
+    const checks = ["do_indexnow","open_chrome_after","schedule_enabled","auto_naver_register"];
+
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+        btn.classList.add("active");
+        $(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    function collectSettings() {
+      const data = {};
+      fields.forEach((k) => { data[k] = $(k).value; });
+      checks.forEach((k) => { data[k] = $(k).checked; });
+      return data;
+    }
+
+    function applySettings(s) {
+      if (!s) return;
+      fields.forEach((k) => { if (s[k] != null) $(k).value = s[k]; });
+      checks.forEach((k) => { if (s[k] != null) $(k).checked = !!s[k]; });
+    }
+
+    async function api(path, opts) {
+      const res = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...opts,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      return data;
+    }
+
+    let settingsLoaded = false;
+
+    function renderState(st, { applyForm = false } = {}) {
+      if (applyForm || !settingsLoaded) {
+        applySettings(st.settings);
+        settingsLoaded = true;
+      }
+      $("queue_summary").textContent = st.queue.summary;
+      $("queue_summary2").textContent = st.queue.summary;
+      $("schedule_status").textContent = st.schedule_status;
+      $("job_status").textContent = st.status + (st.running ? " (실행 중)" : "");
+      $("pending_status").textContent = `미등록 블로그: ${st.pending_naver_count ?? 0}건`;
+      $("logbox").textContent = (st.logs || []).join("\n");
+      $("logbox").scrollTop = $("logbox").scrollHeight;
+      if (st.admin_unlocked) {
+        $("naver_logbox").textContent = (st.naver_logs || []).join("\n") || "(블로그 로그 없음)";
+        $("naver_logbox").scrollTop = $("naver_logbox").scrollHeight;
+      } else {
+        $("naver_logbox").textContent = "관리자 인증 후 표시됩니다.";
+      }
+      const box = $("urls");
+      box.innerHTML = "";
+      (st.last_urls || []).forEach((u) => {
+        const a = document.createElement("a");
+        a.href = u; a.target = "_blank"; a.textContent = u;
+        box.appendChild(a);
+      });
+      $("btn_run").disabled = !!st.running;
+      $("btn_run2").disabled = !!st.running;
+      $("btn_naver_pending").disabled = !!st.running;
+    }
+
+    async function refresh(opts = {}) {
+      try {
+        const st = await api("/api/state");
+        renderState(st, opts);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function saveSettings() {
+      const st = await api("/api/settings", { method: "POST", body: JSON.stringify(collectSettings()) });
+      renderState(st, { applyForm: true });
+      alert("설정을 저장했습니다.");
+    }
+
+    $("btn_save").onclick = saveSettings;
+    $("btn_save2").onclick = saveSettings;
+    $("btn_build_queue").onclick = async () => {
+      await api("/api/settings", { method: "POST", body: JSON.stringify(collectSettings()) });
+      const r = await api("/api/queue/build", { method: "POST", body: "{}" });
+      await refresh({ applyForm: false });
+      alert(`큐 ${r.remaining}건 생성 · 약 ${r.days_left}일`);
+    };
+    $("btn_run").onclick = $("btn_run2").onclick = async () => {
+      await api("/api/settings", { method: "POST", body: JSON.stringify(collectSettings()) });
+      await api("/api/batch/run", { method: "POST", body: "{}" });
+      await refresh({ applyForm: false });
+    };
+    $("btn_naver_pending").onclick = async () => {
+      await api("/api/settings", { method: "POST", body: JSON.stringify(collectSettings()) });
+      await api("/api/naver/pending", { method: "POST", body: "{}" });
+      await refresh({ applyForm: false });
+    };
+    $("btn_stop").onclick = async () => { await api("/api/batch/stop", { method: "POST", body: "{}" }); await refresh({ applyForm: false }); };
+    $("btn_quit").onclick = async () => {
+      if (!confirm("프로그램을 완전히 종료할까요? (스케줄도 중지됩니다)")) return;
+      try { await api("/api/quit", { method: "POST", body: "{}" }); } catch (_) {}
+      window.close();
+    };
+    $("btn_quit_top").onclick = $("btn_quit").onclick;
+    $("btn_admin_unlock").onclick = async () => {
+      try {
+        const st = await api("/api/admin/unlock", {
+          method: "POST",
+          body: JSON.stringify({ password: $("admin_password").value }),
+        });
+        $("admin_password").value = "";
+        renderState(st, { applyForm: false });
+      } catch (e) {
+        alert(e.message || "인증 실패");
+      }
+    };
+    $("btn_admin_lock").onclick = async () => {
+      const st = await api("/api/admin/lock", { method: "POST", body: "{}" });
+      renderState(st, { applyForm: false });
+    };
+    $("btn_sched_apply").onclick = async () => {
+      await api("/api/settings", { method: "POST", body: JSON.stringify(collectSettings()) });
+      await api("/api/schedule", {
+        method: "POST",
+        body: JSON.stringify({
+          enabled: $("schedule_enabled").checked,
+          time: $("schedule_time").value,
+        }),
+      });
+      await refresh({ applyForm: false });
+      alert("스케줄을 적용했습니다.");
+    };
+
+    refresh({ applyForm: true });
+    setInterval(() => refresh({ applyForm: false }), 2000);
+  </script>
+</body>
+</html>
