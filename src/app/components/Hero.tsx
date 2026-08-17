@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { ArrowDown } from "lucide-react";
 import { SITE, CTA_LABEL } from "@/lib/site";
 import { imageUrl } from "@/lib/images";
@@ -5,26 +8,72 @@ import { imageUrl } from "@/lib/images";
 const HERO_VIDEO_SRC = "/videos/hero.mp4";
 
 export default function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const poster = imageUrl(5);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
+    video.setAttribute("x5-playsinline", "true");
+
+    const tryPlay = () => {
+      const play = video.play();
+      if (play) play.catch(() => {});
+    };
+
+    tryPlay();
+    video.addEventListener("canplay", tryPlay);
+    video.addEventListener("loadeddata", tryPlay);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tryPlay();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("pageshow", tryPlay);
+
+    const onFirstGesture = () => tryPlay();
+    document.addEventListener("touchstart", onFirstGesture, { once: true, passive: true });
+    document.addEventListener("click", onFirstGesture, { once: true });
+
+    return () => {
+      video.removeEventListener("canplay", tryPlay);
+      video.removeEventListener("loadeddata", tryPlay);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("pageshow", tryPlay);
+      document.removeEventListener("touchstart", onFirstGesture);
+      document.removeEventListener("click", onFirstGesture);
+    };
+  }, []);
+
   return (
-    <section id="top" className="relative min-h-[100svh] overflow-hidden text-white">
-      <div className="absolute inset-0 hero-media">
+    <section id="top" className="relative h-[100svh] min-h-[100svh] overflow-hidden text-white">
+      <div className="hero-media absolute inset-0">
         <video
-          className="h-full w-full object-cover"
+          ref={videoRef}
+          className="hero-video"
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
           poster={poster}
+          controls={false}
+          disablePictureInPicture
+          disableRemotePlayback
           aria-hidden
         >
           <source src={HERO_VIDEO_SRC} type="video/mp4" />
         </video>
       </div>
+      <div className="hero-overlay pointer-events-none absolute inset-0" />
 
-      <div className="container relative flex min-h-[100svh] flex-col justify-end pb-32 pt-32 md:justify-center md:pb-24 md:pt-28">
+      <div className="container relative z-10 flex h-full min-h-[100svh] flex-col justify-end pb-36 pt-28 md:justify-center md:pb-24 md:pt-28">
         <p className="animate-rise text-sm font-semibold tracking-[0.08em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]">
           {SITE.farm} · {SITE.taglineEn}
         </p>

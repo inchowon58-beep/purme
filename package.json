@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check:git-target": "node scripts/ensure-purme.cjs"
+    "check:git-target": "node scripts/ensure-purme.cjs",
+    "deploy:prod": "node scripts/ensure-purme.cjs && vercel --prod --yes"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
