@@ -24,7 +24,7 @@ npm run dev
 
 ## 주요 설정
 
-- `src/lib/site.ts` — 업체명, 전화(010-55606-9637), CDN, 도메인
+- `src/lib/site.ts` — 업체명, 전화(010-5606-9637), CDN, 도메인
 - 이미지 CDN: `https://image.cattery.co.kr/purme/`
 - 히어로 영상: `public/videos/hero.mp4` (Mixkit 정원 빌라 영상)
 - SEO: `/guide/[slug]` + `tools/webdoc`

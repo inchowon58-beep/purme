@@ -7,7 +7,7 @@ export const SITE = {
   tagline: "정원·테라스 인테리어, 신뢰로 완성합니다",
   taglineEn: "Purme Garden · Landscape & Terrace Interior",
   description:
-    "푸르메정원은 정원인테리어와 테라스인테리어를 전문으로 하는 조경인테리어 업체입니다. 상담부터 설계·시공·마감까지 과정을 투명하게 안내하며, 오래 남을 공간을 책임지고 완성합니다. 문의 010-55606-9637.",
+    "푸르메정원은 정원인테리어와 테라스인테리어를 전문으로 하는 조경인테리어 업체입니다. 상담부터 설계·시공·마감까지 과정을 투명하게 안내하며, 오래 남을 공간을 책임지고 완성합니다. 문의 010-5606-9637.",
   keywords: [
     "정원인테리어",
     "테라스인테리어",
@@ -22,9 +22,9 @@ export const SITE = {
     "데크시공",
     "외곽조경",
   ],
-  phone: "010-55606-9637",
-  phoneTel: "tel:010556069637",
-  phoneDisplay: "010-55606-9637",
+  phone: "010-5606-9637",
+  phoneTel: "tel:01056069637",
+  phoneDisplay: "010-5606-9637",
   logo: "https://image.cattery.co.kr/purme/01.webp",
   imageBase: "https://image.cattery.co.kr/purme",
   imageCount: 59,

@@ -20,8 +20,8 @@ from nearby_geo import extract_region, extract_theme, nearby_areas, nearby_html_
 BRAND = "푸르메정원"
 FARM = "조경인테리어"
 SITE_NAME = "조경인테리어 푸르메정원"
-PHONE = "010-55606-9637"
-PHONE_TEL = "010556069637"
+PHONE = "010-5606-9637"
+PHONE_TEL = "01056069637"
 LOCATION = "대한민국 전국"
 IMAGE_BASE = "https://image.cattery.co.kr/purme"
 IMAGE_COUNT = 59
