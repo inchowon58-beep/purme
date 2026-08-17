@@ -1,6 +1,6 @@
+import Image from "next/image";
 import { SITE } from "@/lib/site";
 import { allImageUrls, galleryAlt } from "@/lib/images";
-import TrimFillImage from "./TrimFillImage";
 
 export default function Gallery() {
   const images = allImageUrls();
@@ -20,7 +20,14 @@ export default function Gallery() {
         <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
           {images.map((src, i) => (
             <div key={src} className="rounded-media relative aspect-square overflow-hidden shadow-sm">
-              <TrimFillImage src={src} alt={galleryAlt(i + 1)} />
+              <Image
+                src={src}
+                alt={galleryAlt(i + 1)}
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
             </div>
           ))}
         </div>

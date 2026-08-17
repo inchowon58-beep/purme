@@ -64,33 +64,6 @@ img {
   display: block;
 }
 
-.trim-fill {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background: #1c2e26;
-}
-
-.trim-fill-img {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  object-fit: cover;
-  object-position: center;
-}
-
-.trim-fill-img.is-fitted {
-  inset: auto;
-  right: auto;
-  bottom: auto;
-  width: unset !important;
-  height: unset !important;
-  object-fit: fill;
-}
-
 .container {
   width: min(1100px, calc(100% - 2rem));
   margin-inline: auto;
