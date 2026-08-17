@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 type Props = {
   src: string;
@@ -9,10 +9,38 @@ type Props = {
   priority?: boolean;
 };
 
-const WHITE = 248;
+type Trim = { l: number; t: number; r: number; b: number };
+type Box = { width: number; height: number; left: number; top: number };
 
-function detectWhiteTrim(img: HTMLImageElement) {
-  const maxSide = 180;
+const EMPTY = { l: 0, t: 0, r: 0, b: 0 };
+
+function nearWhite(r: number, g: number, b: number, a: number) {
+  if (a < 18) return true;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  return max >= 236 && max - min <= 18;
+}
+
+function rowMostlyEmpty(data: Uint8ClampedArray, w: number, y: number) {
+  let empty = 0;
+  for (let x = 0; x < w; x += 1) {
+    const i = (y * w + x) * 4;
+    if (nearWhite(data[i], data[i + 1], data[i + 2], data[i + 3])) empty += 1;
+  }
+  return empty / w >= 0.92;
+}
+
+function colMostlyEmpty(data: Uint8ClampedArray, w: number, h: number, x: number) {
+  let empty = 0;
+  for (let y = 0; y < h; y += 1) {
+    const i = (y * w + x) * 4;
+    if (nearWhite(data[i], data[i + 1], data[i + 2], data[i + 3])) empty += 1;
+  }
+  return empty / h >= 0.92;
+}
+
+function detectWhiteTrim(img: HTMLImageElement): Trim {
+  const maxSide = 220;
   const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
   const w = Math.max(1, Math.round(img.naturalWidth * scale));
   const h = Math.max(1, Math.round(img.naturalHeight * scale));
@@ -20,98 +48,96 @@ function detectWhiteTrim(img: HTMLImageElement) {
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (!ctx) return { l: 0, t: 0, r: 0, b: 0 };
-
+  if (!ctx) return EMPTY;
   ctx.drawImage(img, 0, 0, w, h);
   const data = ctx.getImageData(0, 0, w, h).data;
-  const empty = (i: number) => {
-    if (data[i + 3] < 12) return true;
-    return data[i] >= WHITE && data[i + 1] >= WHITE && data[i + 2] >= WHITE;
-  };
 
-  let minX = w;
-  let minY = h;
-  let maxX = -1;
-  let maxY = -1;
-  for (let y = 0; y < h; y += 1) {
-    for (let x = 0; x < w; x += 1) {
-      if (!empty((y * w + x) * 4)) {
-        if (x < minX) minX = x;
-        if (y < minY) minY = y;
-        if (x > maxX) maxX = x;
-        if (y > maxY) maxY = y;
-      }
-    }
-  }
-  if (maxX < 0) return { l: 0, t: 0, r: 0, b: 0 };
+  let t = 0;
+  let b = 0;
+  let l = 0;
+  let r = 0;
+  while (t < h - 2 && rowMostlyEmpty(data, w, t)) t += 1;
+  while (b < h - 2 - t && rowMostlyEmpty(data, w, h - 1 - b)) b += 1;
+  while (l < w - 2 && colMostlyEmpty(data, w, h, l)) l += 1;
+  while (r < w - 2 - l && colMostlyEmpty(data, w, h, w - 1 - r)) r += 1;
 
+  return { l: l / w, t: t / h, r: r / w, b: b / h };
+}
+
+function coverBox(wrapW: number, wrapH: number, natW: number, natH: number, trim: Trim): Box {
+  const pad = 0.012;
+  const l = Math.min(0.45, Math.max(0, trim.l + pad));
+  const r = Math.min(0.45, Math.max(0, trim.r + pad));
+  const t = Math.min(0.45, Math.max(0, trim.t + pad));
+  const b = Math.min(0.45, Math.max(0, trim.b + pad));
+  const cw = Math.max(8, (1 - l - r) * natW);
+  const ch = Math.max(8, (1 - t - b) * natH);
+  const scale = Math.max(wrapW / cw, wrapH / ch) * 1.03;
   return {
-    l: minX / w,
-    t: minY / h,
-    r: (w - 1 - maxX) / w,
-    b: (h - 1 - maxY) / h,
+    width: natW * scale,
+    height: natH * scale,
+    left: -(l * natW) * scale,
+    top: -(t * natH) * scale,
   };
 }
 
 export default function TrimFillImage({ src, alt, className = "", priority = false }: Props) {
-  const [viewBox, setViewBox] = useState<string | undefined>();
-  const [zoom, setZoom] = useState(1);
-  const [origin, setOrigin] = useState("center center");
-  const canViewBox = useMemo(
-    () => typeof CSS !== "undefined" && typeof CSS.supports === "function" && CSS.supports("object-view-box", "inset(0%)"),
-    []
-  );
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const trimRef = useRef<Trim>(EMPTY);
+  const [box, setBox] = useState<Box | null>(null);
 
-  const onLoad = useCallback(
-    (event: React.SyntheticEvent<HTMLImageElement>) => {
-      try {
-        const trim = detectWhiteTrim(event.currentTarget);
-        const cw = Math.max(0.2, 1 - trim.l - trim.r);
-        const ch = Math.max(0.2, 1 - trim.t - trim.b);
-        const padX = Math.min(0.02, cw * 0.02);
-        const padY = Math.min(0.02, ch * 0.02);
-        const l = Math.max(0, trim.l + padX);
-        const r = Math.max(0, trim.r + padX);
-        const t = Math.max(0, trim.t + padY);
-        const b = Math.max(0, trim.b + padY);
-        const contentW = Math.max(0.2, 1 - l - r);
-        const contentH = Math.max(0.2, 1 - t - b);
+  const layout = useCallback(() => {
+    const wrap = wrapRef.current;
+    const img = imgRef.current;
+    if (!wrap || !img || !img.naturalWidth) return;
+    const wrapW = wrap.clientWidth;
+    const wrapH = wrap.clientHeight;
+    if (!wrapW || !wrapH) return;
+    setBox(coverBox(wrapW, wrapH, img.naturalWidth, img.naturalHeight, trimRef.current));
+  }, []);
 
-        if (canViewBox) {
-          setViewBox(`inset(${t * 100}% ${r * 100}% ${b * 100}% ${l * 100}%)`);
-          setZoom(1);
-          return;
-        }
+  const onLoad = useCallback(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    try {
+      trimRef.current = detectWhiteTrim(img);
+    } catch {
+      trimRef.current = EMPTY;
+    }
+    layout();
+  }, [layout]);
 
-        const nextZoom = Math.max(1 / contentW, 1 / contentH);
-        setViewBox(undefined);
-        setZoom(nextZoom > 1.03 ? nextZoom : 1);
-        setOrigin(`${((l + 1 - r) / 2) * 100}% ${((t + 1 - b) / 2) * 100}%`);
-      } catch {
-        setViewBox(undefined);
-        setZoom(1);
-      }
-    },
-    [canViewBox]
-  );
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const ro = new ResizeObserver(() => layout());
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, [layout, src]);
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      crossOrigin="anonymous"
-      decoding="async"
-      fetchPriority={priority ? "high" : "auto"}
-      onLoad={onLoad}
-      className={`absolute inset-0 h-full w-full max-w-none object-cover ${className}`}
-      style={
-        {
-          objectFit: "cover",
-          ...(viewBox ? { objectViewBox: viewBox } : {}),
-          transform: zoom > 1 ? `scale(${zoom})` : undefined,
-          transformOrigin: origin,
-        } as React.CSSProperties
-      }
-    />
+    <div ref={wrapRef} className={`trim-fill ${className}`.trim()}>
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        crossOrigin="anonymous"
+        decoding="async"
+        fetchPriority={priority ? "high" : "auto"}
+        onLoad={onLoad}
+        className={box ? "trim-fill-img is-fitted" : "trim-fill-img"}
+        style={
+          box
+            ? {
+                width: box.width,
+                height: box.height,
+                left: box.left,
+                top: box.top,
+              }
+            : undefined
+        }
+      />
+    </div>
   );
 }
