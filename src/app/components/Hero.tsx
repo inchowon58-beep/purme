@@ -52,8 +52,11 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="top" className="relative h-[100svh] min-h-[100svh] overflow-hidden text-white">
-      <div className="hero-media absolute inset-0">
+    <section
+      id="top"
+      className="relative overflow-hidden bg-[var(--sky-deep)] text-white md:h-[100svh] md:min-h-[100svh] md:bg-transparent"
+    >
+      <div className="hero-media">
         <video
           ref={videoRef}
           className="hero-video"
@@ -70,23 +73,23 @@ export default function Hero() {
         >
           <source src={HERO_VIDEO_SRC} type="video/mp4" />
         </video>
+        <div className="hero-overlay pointer-events-none" />
       </div>
-      <div className="hero-overlay pointer-events-none absolute inset-0" />
 
-      <div className="container relative z-10 flex h-full min-h-[100svh] flex-col justify-end pb-36 pt-28 md:justify-center md:pb-24 md:pt-28">
-        <p className="animate-rise text-sm font-semibold tracking-[0.08em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]">
+      <div className="hero-copy container relative z-10 flex flex-col pb-10 pt-7 md:absolute md:inset-0 md:h-full md:min-h-[100svh] md:justify-center md:pb-24 md:pt-28">
+        <p className="animate-rise text-sm font-semibold tracking-[0.08em] text-white md:drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]">
           {SITE.farm} · {SITE.taglineEn}
         </p>
-        <h1 className="animate-rise-delay mt-3 max-w-3xl text-4xl font-extrabold drop-shadow-[0_3px_14px_rgba(0,0,0,0.7)] sm:text-5xl md:text-6xl">
+        <h1 className="animate-rise-delay mt-3 max-w-3xl text-[2rem] font-extrabold leading-tight sm:text-5xl md:text-6xl md:drop-shadow-[0_3px_14px_rgba(0,0,0,0.7)]">
           {SITE.name}
           <span className="mt-3 block text-[0.55em] font-bold leading-snug text-white">
             정원과 테라스를, 오래 남을 풍경으로
           </span>
         </h1>
-        <p className="animate-rise-delay-2 mt-5 max-w-xl text-base text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] md:text-lg">
+        <p className="animate-rise-delay-2 mt-4 max-w-xl text-base text-white/95 md:mt-5 md:text-lg md:drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)]">
           정원인테리어부터 테라스인테리어까지, 상담·설계·시공을 투명하게 진행합니다.
         </p>
-        <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
+        <div className="animate-rise-delay-2 mt-6 flex flex-wrap gap-3 md:mt-8">
           <a href="#works" className="btn-primary">
             시공 사례 보기
             <ArrowDown size={18} />
