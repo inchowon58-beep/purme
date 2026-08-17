@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { SITE } from "@/lib/site";
 import { WORKS_GALLERY } from "@/lib/works-gallery";
+import TrimFillImage from "./TrimFillImage";
 
 export default function Works() {
   return (
@@ -26,14 +26,9 @@ export default function Works() {
           {WORKS_GALLERY.map((work) => (
             <article key={work.name} className="soft-card group">
               <div className="relative aspect-[4/5] overflow-hidden">
-                <Image
-                  src={work.src}
-                  alt={`${work.name} — ${work.type} 시공 사례`}
-                  fill
-                  unoptimized
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                  sizes="(max-width: 1024px) 50vw, 25vw"
-                />
+                <div className="absolute inset-0 overflow-hidden transition duration-700 group-hover:scale-105">
+                  <TrimFillImage src={work.src} alt={`${work.name} — ${work.type} 시공 사례`} />
+                </div>
                 <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-0.5 text-[0.65rem] font-bold text-[var(--sky-deep)] sm:left-3 sm:top-3 sm:px-3 sm:py-1 sm:text-xs">
                   {work.status}
                 </span>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SITE, CTA_LABEL } from "@/lib/site";
@@ -9,6 +8,7 @@ import { faqJsonLd } from "@/lib/faq-data";
 import GuideHeroThumb from "@/app/components/GuideHeroThumb";
 import NearbyRegionsSection from "@/app/components/NearbyRegionsSection";
 import NearbyStationsSection from "@/app/components/NearbyStationsSection";
+import TrimFillImage from "@/app/components/TrimFillImage";
 import {
   getNearbyStationLinks,
   getNearbySubRegionLinks,
@@ -192,16 +192,8 @@ export default async function GuidePage({ params }: Props) {
               </p>
             ))}
             {si < 2 && images[si + 1] && (
-              <figure className="my-7 overflow-hidden rounded-[1.75rem] border border-[var(--line)]">
-                <Image
-                  src={images[si + 1]}
-                  alt={galleryAlt(page.keyword, si + 2)}
-                  width={1000}
-                  height={640}
-                  unoptimized
-                  className="aspect-[16/10] w-full object-cover"
-                  loading="lazy"
-                />
+              <figure className="relative my-7 aspect-[16/10] overflow-hidden rounded-[1.75rem] border border-[var(--line)]">
+                <TrimFillImage src={images[si + 1]} alt={galleryAlt(page.keyword, si + 2)} />
               </figure>
             )}
           </section>

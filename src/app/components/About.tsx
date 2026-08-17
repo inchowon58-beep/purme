@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { SITE } from "@/lib/site";
 import { imageUrl } from "@/lib/images";
+import TrimFillImage from "./TrimFillImage";
 
 const PROMISES = [
   {
@@ -25,14 +25,7 @@ export default function About() {
     <section id="about" className="section">
       <div className="container grid items-center gap-10 md:grid-cols-2">
         <div className="rounded-media relative aspect-[4/5] overflow-hidden shadow-[0_20px_50px_rgba(28,46,38,0.12)] md:aspect-[5/6]">
-          <Image
-            src={imageUrl(8)}
-            alt={`${SITE.name} 정원 인테리어 시공 공간`}
-            fill
-            unoptimized
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
+          <TrimFillImage src={imageUrl(8)} alt={`${SITE.name} 정원 인테리어 시공 공간`} priority />
         </div>
         <div>
           <p className="text-sm font-bold tracking-wide text-[var(--sky)]">OUR PROMISE</p>

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import type { SeoPage } from "@/lib/seo-pages";
 import { galleryAlt } from "@/lib/images";
+import TrimFillImage from "./TrimFillImage";
 
 type Props = {
   page: SeoPage;
@@ -15,15 +15,7 @@ export default function GuideHeroThumb({ page, imageSrc }: Props) {
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[720px] overflow-hidden rounded-[1.75rem] shadow-[0_16px_40px_rgba(28,36,52,0.12)] ring-1 ring-white/80">
-      <Image
-        src={imageSrc}
-        alt={galleryAlt(page.keyword, 1)}
-        fill
-        priority
-        unoptimized
-        className="object-cover"
-        sizes="(max-width:768px) 100vw, 720px"
-      />
+      <TrimFillImage src={imageSrc} alt={galleryAlt(page.keyword, 1)} priority />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(28,36,52,0.15)_0%,rgba(28,36,52,0.55)_100%)]" />
       <div className="pointer-events-none absolute inset-3 rounded-[1.35rem] border border-white/90 md:inset-4" />
 
