@@ -1,5 +1,43 @@
 /** 조경인테리어 푸르메정원 — 사이트 공통 설정 */
 
+const FALLBACK_ORIGIN = "https://www.purmegarden.co.kr";
+
+/** 수집기(Yeti)가 200을 받는 최종 공개 주소. 끝 슬래시 없음, https·www 고정. */
+export function publicOrigin(): string {
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_ORIGIN).trim();
+  try {
+    const u = new URL(raw.includes("://") ? raw : `https://${raw}`);
+    if (u.hostname === "localhost" || u.hostname === "127.0.0.1") {
+      return u.origin.replace(/\/$/, "");
+    }
+    if (
+      u.hostname.endsWith(".vercel.app") ||
+      u.hostname === "purmegarden.co.kr" ||
+      u.hostname === "purme.vercel.app"
+    ) {
+      return FALLBACK_ORIGIN;
+    }
+    u.protocol = "https:";
+    u.hash = "";
+    u.search = "";
+    u.pathname = "";
+    return u.origin.replace(/\/$/, "");
+  } catch {
+    return FALLBACK_ORIGIN;
+  }
+}
+
+export function absoluteUrl(path = "/"): string {
+  const origin = publicOrigin();
+  if (!path || path === "/") return origin;
+  const p = (path.startsWith("/") ? path : `/${path}`).replace(/\/+$/, "");
+  return `${origin}${p}`;
+}
+
+export function guidePageUrl(slug: string): string {
+  return absoluteUrl(`/guide/${encodeURIComponent(slug)}`);
+}
+
 export const SITE = {
   name: "푸르메정원",
   brand: "푸르메정원",
@@ -32,7 +70,9 @@ export const SITE = {
   address: "전국 상담 · 현장 방문 예약제",
   areaServed: "대한민국 전국",
   domain: "purme",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://purme.vercel.app",
+  get siteUrl() {
+    return publicOrigin();
+  },
   infocsUrl: "https://www.infocs.co.kr/",
 } as const;
 

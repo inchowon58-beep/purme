@@ -3,7 +3,7 @@ import path from "path";
 import { createHash } from "crypto";
 import { get, list, put } from "@vercel/blob";
 import { migrateImageUrl } from "./images";
-import { SITE } from "./site";
+import { guidePageUrl } from "./site";
 
 export type FaqItem = { q: string; a: string };
 
@@ -443,7 +443,7 @@ export async function savePage(page: SeoPage): Promise<void> {
 }
 
 export function pagePublicUrl(slug: string): string {
-  return `${SITE.siteUrl}/guide/${encodeURIComponent(slug)}`;
+  return guidePageUrl(slug);
 }
 
 export function pagePath(slug: string): string {

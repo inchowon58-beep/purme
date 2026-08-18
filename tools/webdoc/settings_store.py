@@ -10,7 +10,7 @@ from typing import Any, Dict
 from project_paths import webdoc_dir
 
 DEFAULT_VM_PATH = ""
-DEFAULT_SITE_URL = "https://purme.vercel.app"
+DEFAULT_SITE_URL = "https://www.purmegarden.co.kr"
 
 
 def settings_path() -> str:
@@ -45,6 +45,15 @@ def default_settings() -> Dict[str, Any]:
         "naver_delay_min": "3",
         "naver_delay_max": "8",
         "schedule_last_run_date": "",
+        "gen_mode": "template",
+        "gemini_api_key": "",
+        "gemini_model": "gemini-3.5-flash-lite",
+        "gemini_prompt": (
+            "톤: 신뢰감 있는 정원·테라스 인테리어 상담 안내. 과장·허위·보장성 표현 금지.\n"
+            "키워드에 지역명이 있으면 그 지역에서 상담·시공 문의하는 독자 시점으로 쓰세요.\n"
+            "본문은 정보성 가이드처럼, 광고 카피처럼 쓰지 마세요.\n"
+            "{keyword}를 제목·H1·본문·FAQ에 자연스럽게 넣으세요.\n"
+        ),
     }
 
 

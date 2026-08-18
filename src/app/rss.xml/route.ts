@@ -1,4 +1,4 @@
-import { SITE } from "@/lib/site";
+import { SITE, absoluteUrl } from "@/lib/site";
 import { listPages, type SeoPage } from "@/lib/seo-pages";
 
 export const dynamic = "force-dynamic";
@@ -21,13 +21,8 @@ function rfc822(d: Date): string {
   return d.toUTCString();
 }
 
-function resolveBase(req: Request): string {
-  const u = new URL(req.url);
-  const xfHost = req.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
-  const host = xfHost || req.headers.get("host") || u.host;
-  const xfProto = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
-  const proto = xfProto || (u.protocol === "https:" ? "https" : "http");
-  return `${proto}://${host}`.replace(/\/$/, "");
+function resolveBase(_req: Request): string {
+  return absoluteUrl("/");
 }
 
 function fullBody(page: SeoPage): string {
@@ -100,7 +95,7 @@ export async function GET(req: Request) {
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>${escXml(SITE.name)}</title>
-  <link>${escXml(base)}/</link>
+  <link>${escXml(base)}</link>
   <description>${escXml(SITE.description)}</description>
   <language>ko</language>
   <copyright>${escXml(SITE.brand)}</copyright>

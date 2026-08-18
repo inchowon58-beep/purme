@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { absoluteUrl } from "@/lib/site";
 
 const PAGE_SIZE = 25;
 
@@ -99,13 +100,16 @@ export default function AdminClient() {
   const [detailOrder, setDetailOrder] = useState<OrderItem | null>(null);
 
   function absolutePageUrl(path: string) {
-    const base = (process.env.NEXT_PUBLIC_SITE_URL || "https://purme.vercel.app").replace(
-      /\/$/,
-      ""
-    );
-    if (!path) return `${base}/guide`;
-    if (path.startsWith("http")) return path;
-    return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+    if (!path) return absoluteUrl("/guide");
+    if (path.startsWith("http")) {
+      try {
+        const u = new URL(path);
+        return absoluteUrl(`${u.pathname}${u.search}`.replace(/\/+$/, "") || "/");
+      } catch {
+        return absoluteUrl("/guide");
+      }
+    }
+    return absoluteUrl(path.replace(/\/+$/, "") || "/");
   }
 
   async function copyPageUrl(path: string, slug: string) {

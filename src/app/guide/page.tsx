@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { listPageSummaries, pagePath } from "@/lib/seo-pages";
-import { SITE } from "@/lib/site";
+import { SITE, absoluteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   title: "지역별 인테리어 안내",
   description: `${SITE.name} 지역별 정원·테라스 인테리어 안내글 모음`,
   keywords: [...SITE.keywords, "지역별 정원인테리어"],
-  alternates: { canonical: `${SITE.siteUrl}/guide` },
+  alternates: { canonical: absoluteUrl("/guide") },
   openGraph: {
     title: `지역별 인테리어 안내 | ${SITE.name}`,
     description: `${SITE.name} 정원·테라스 인테리어 지역 가이드`,
-    url: `${SITE.siteUrl}/guide`,
+    url: absoluteUrl("/guide"),
     images: [{ url: SITE.logo, alt: SITE.name }],
   },
 };

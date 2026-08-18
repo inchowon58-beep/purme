@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SITE, CTA_LABEL } from "@/lib/site";
+import { SITE, CTA_LABEL, absoluteUrl, guidePageUrl } from "@/lib/site";
 import { listPageSummaries, readPage } from "@/lib/seo-pages";
 import { galleryAlt } from "@/lib/images";
 import { faqJsonLd } from "@/lib/faq-data";
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = decodeURIComponent(raw);
   const page = await readPage(slug);
   if (!page) return { title: "페이지 없음" };
-  const url = `${SITE.siteUrl.replace(/\/$/, "")}/guide/${encodeURIComponent(page.slug)}`;
+  const url = guidePageUrl(page.slug);
   const ogImage = page.images[0] || SITE.logo;
   const region = regionFromPageKeyword(page.keyword);
   const theme = extractKeywordTheme(page.keyword);
@@ -94,7 +94,7 @@ export default async function GuidePage({ params }: Props) {
   const page = await readPage(slug);
   if (!page) notFound();
 
-  const pageUrl = `${SITE.siteUrl.replace(/\/$/, "")}/guide/${encodeURIComponent(page.slug)}`;
+  const pageUrl = guidePageUrl(page.slug);
   const images = (page.images || []).slice(0, 3);
   const region = regionFromPageKeyword(page.keyword);
   const keywordSuffix = extractKeywordTheme(page.keyword);
@@ -107,12 +107,12 @@ export default async function GuidePage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "홈", item: SITE.siteUrl },
+      { "@type": "ListItem", position: 1, name: "홈", item: absoluteUrl("/") },
       {
         "@type": "ListItem",
         position: 2,
         name: "지역별 인테리어 안내",
-        item: `${SITE.siteUrl.replace(/\/$/, "")}/guide`,
+        item: absoluteUrl("/guide"),
       },
       {
         "@type": "ListItem",

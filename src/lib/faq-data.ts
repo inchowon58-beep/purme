@@ -1,4 +1,4 @@
-import { SITE } from "./site";
+import { SITE, absoluteUrl } from "./site";
 
 export type FaqItem = { q: string; a: string };
 
@@ -49,7 +49,7 @@ export function orgJsonLd() {
     name: SITE.name,
     alternateName: [SITE.brand, SITE.farm, "조경인테리어 푸르메정원"],
     description: SITE.description,
-    url: SITE.siteUrl,
+    url: absoluteUrl("/"),
     telephone: SITE.phone,
     image: SITE.logo,
     address: {

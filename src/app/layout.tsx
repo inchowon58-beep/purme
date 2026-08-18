@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { SITE } from "@/lib/site";
+import { SITE, absoluteUrl } from "@/lib/site";
 import { faqJsonLd, orgJsonLd } from "@/lib/faq-data";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -7,7 +7,7 @@ import FixedCTA from "./components/FixedCTA";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.siteUrl),
+  metadataBase: new URL(absoluteUrl("/")),
   title: {
     default: `${SITE.name} | 정원·테라스 인테리어`,
     template: `%s | ${SITE.brand}`,
@@ -17,11 +17,11 @@ export const metadata: Metadata = {
   authors: [{ name: SITE.name }],
   creator: SITE.name,
   publisher: SITE.name,
-  alternates: { canonical: SITE.siteUrl },
+  alternates: { canonical: absoluteUrl("/") },
   openGraph: {
     type: "website",
     locale: "ko_KR",
-    url: SITE.siteUrl,
+    url: absoluteUrl("/"),
     siteName: SITE.name,
     title: `${SITE.name} | 정원·테라스 인테리어`,
     description: SITE.description,
@@ -67,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <head>
+        <link rel="canonical" href={absoluteUrl("/")} />
         <meta name="naver-site-verification" content="3c12542ea20440fc80478e8f254ad646e97b727b" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link rel="preconnect" href="https://image.cattery.co.kr" />

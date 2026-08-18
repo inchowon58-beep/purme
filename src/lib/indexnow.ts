@@ -1,4 +1,4 @@
-import { SITE } from "./site";
+import { absoluteUrl, guidePageUrl } from "./site";
 
 /** IndexNow 공개 키 — public/{key}.txt 와 동일해야 함 */
 export const INDEXNOW_KEY =
@@ -8,14 +8,14 @@ const ENDPOINT = "https://api.indexnow.org/indexnow";
 
 function siteHost(): string {
   try {
-    return new URL(SITE.siteUrl).host;
+    return new URL(absoluteUrl("/")).host;
   } catch {
-    return "purme.vercel.app";
+    return "www.purmegarden.co.kr";
   }
 }
 
 export function indexNowKeyLocation(): string {
-  return `${SITE.siteUrl.replace(/\/$/, "")}/${INDEXNOW_KEY}.txt`;
+  return `${absoluteUrl("/")}/${INDEXNOW_KEY}.txt`;
 }
 
 export type IndexNowResult = {
@@ -25,7 +25,13 @@ export type IndexNowResult = {
 };
 
 export async function submitIndexNow(urls: string[]): Promise<IndexNowResult> {
-  const unique = [...new Set(urls.map((u) => u.trim()).filter(Boolean))];
+  const unique = [
+    ...new Set(
+      urls
+        .map((u) => u.trim().replace(/\/+$/, ""))
+        .filter(Boolean)
+    ),
+  ];
   if (!unique.length) {
     return { ok: false, message: "제출할 URL이 없습니다.", submitted: 0 };
   }
@@ -67,5 +73,5 @@ export async function submitIndexNow(urls: string[]): Promise<IndexNowResult> {
 }
 
 export function absoluteGuideUrl(slug: string): string {
-  return `${SITE.siteUrl.replace(/\/$/, "")}/guide/${encodeURIComponent(slug)}`;
+  return guidePageUrl(slug);
 }

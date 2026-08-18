@@ -16,7 +16,7 @@ except ImportError:  # pragma: no cover
 INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow"
 # Next public/{key}.txt 와 동일
 DEFAULT_KEY = "b7e4d9c2a1f8563048e7b6c5d4a39281"
-DEFAULT_HOST = "purme.vercel.app"
+DEFAULT_HOST = "www.purmegarden.co.kr"
 
 
 def get_indexnow_key() -> str:
