@@ -67,7 +67,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <head>
-        <link rel="canonical" href={absoluteUrl("/")} />
         <meta name="naver-site-verification" content="3c12542ea20440fc80478e8f254ad646e97b727b" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
         <link rel="preconnect" href="https://image.cattery.co.kr" />
